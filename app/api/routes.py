@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.dto.schemas import CorrectionRequest, CorrectionResponse, ErrorResponse
 from app.services.correct_text_helper import process_correction_request
-from app.services.pattern_matching import validate_correction
 from app.services.feedback_generator import generate_feedback
 from app.utils.logger import get_logger
 

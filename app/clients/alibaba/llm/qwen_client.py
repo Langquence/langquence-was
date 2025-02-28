@@ -3,7 +3,7 @@ import json
 from openai import OpenAI
 from app.config.app_config import settings
 from app.consts.prompts import get_correction_prompt
-from app.models.schemas import CorrectionResponse
+from app.dto.schemas import CorrectionResponse
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
