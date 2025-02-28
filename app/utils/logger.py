@@ -4,6 +4,28 @@ import sys
 from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime
 
+class ColoredFormatter(logging.Formatter):
+    COLORS = {
+        'DEBUG': '\033[36m',      # Cyan
+        'INFO': '\033[32m',       # Green
+        'WARNING': '\033[33m',    # Yellow
+        'ERROR': '\033[31m',      # Red
+        'RESET': '\033[0m'        # Reset to default
+    }
+    
+    def format(self, record):
+        format_orig = self._style._fmt
+        
+        if record.levelname in self.COLORS:
+            color = self.COLORS[record.levelname]
+            record.levelname = f"{color}{record.levelname}{self.COLORS['RESET']}"
+            
+        result = super().format(record)
+        
+        self._style._fmt = format_orig
+        
+        return result
+
 # 기본 설정 함수
 def setup_logger():
     # 로그 디렉토리 생성
@@ -11,8 +33,7 @@ def setup_logger():
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    # 로그 포맷 설정
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = ColoredFormatter('%(asctime)s - [PID:%(process)d/TID:%(thread)d] - %(name)s - %(levelname)s - %(message)s')
 
     # 콘솔 출력용 핸들러
     stream_handler = logging.StreamHandler(sys.stdout)
