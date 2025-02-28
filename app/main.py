@@ -1,4 +1,5 @@
 import uvicorn
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
@@ -7,9 +8,22 @@ from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting up Langquence API server")
+    
+    logger.info(f"Application Name: {settings.APP_NAME}")
+    logger.info(f"Environment: {'Development' if settings.DEBUG else 'Production'}")
+    logger.info(f"API Prefix: {settings.API_PREFIX}")
+    logger.info(f"Host: {settings.APP_HOST}:{settings.APP_PORT}")
+    logger.info(f"Model: {settings.MODEL_NAME}")
+
+    yield
+
 app = FastAPI(
     title=settings.APP_NAME,
-    debug=settings.DEBUG
+    debug=settings.DEBUG,
+    lifespan=lifespan
 )
 
 # CORS 미들웨어 설정
@@ -21,17 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 라우터 등록
 app.include_router(router, prefix=settings.API_PREFIX)
-
-# deprecated 되었음. fast api lifespan으로 대체
-# @app.on_event("startup")
-# async def startup_event():
-#     logger.info("Starting up Langquence API server")
-
-# @app.on_event("shutdown")
-# async def shutdown_event():
-#     logger.info("Shutting down Langquence API server")
 
 @app.get("/")
 async def root():
