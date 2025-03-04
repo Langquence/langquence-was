@@ -26,7 +26,7 @@ async def correct_text(input_text: str) -> CorrectionResponse:
             ],
             max_tokens=settings.MAX_TOKENS
         )
-        logger.info(f"API response: \n {completion}")
+        logger.info(f"API response: \n{completion}")
         
         result = completion.choices[0].message.content
         

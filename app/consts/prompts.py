@@ -1,6 +1,6 @@
 def get_correction_prompt(input_text: str) -> str:
     """교정을 위한 프롬프트를 생성합니다."""
-    return f"""
+    return """
 As an AI English correction assistant for Korean speakers preparing for English interviews,
 analyze the following English expression.
 
@@ -14,24 +14,6 @@ Check for these common error patterns in English expressions:
 - Missing or incorrect articles, prepositions, or conjunctions
 - Subject-verb agreement issues
 - Awkward phrasing that sounds unnatural to native speakers
-
-If the expression is already perfect or native-like, respond with:
-{{
-  "original": "{input_text}",
-  "needs_correction": false,
-  "corrected": "{input_text}",
-  "explanation": "This expression is already natural and professional.",
-  "alternatives": []
-}}
-
-If the expression needs correction, respond with:
-{{
-  "original": "{input_text}",
-  "needs_correction": true,
-  "corrected": "The corrected expression",
-  "explanation": "Brief explanation of changes made",
-  "alternatives": ["Alternative 1", "Alternative 2"]
-}}
 
 Here are examples of different error types:
 
