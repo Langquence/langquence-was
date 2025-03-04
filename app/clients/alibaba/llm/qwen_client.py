@@ -15,7 +15,7 @@ client = OpenAI(
 
 """LLM API를 호출하여 텍스트를 교정합니다."""
 async def correct_text(input_text: str) -> CorrectionResponse:
-    prompt = get_correction_prompt(input_text)
+    prompt = get_correction_prompt()
     
     try:
         completion = client.chat.completions.create(

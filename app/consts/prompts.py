@@ -1,4 +1,4 @@
-def get_correction_prompt(input_text: str) -> str:
+def get_correction_prompt() -> str:
     """교정을 위한 프롬프트를 생성합니다."""
     return """
 As an AI English correction assistant for Korean speakers preparing for English interviews,
