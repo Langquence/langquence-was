@@ -26,9 +26,9 @@ async def correct_text(input_text: str) -> CorrectionResponse:
             ],
             max_tokens=settings.MAX_TOKENS
         )
+        logger.info(f"API response: \n {completion}")
         
         result = completion.choices[0].message.content
-        logger.info(f"API response: {result[:200]}...")
         
         parsed_result = parse_llm_response(result, input_text)
         return parsed_result
