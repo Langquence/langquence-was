@@ -2,7 +2,10 @@ import os
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(
+    verbose=True,
+    override=True
+)
 
 class Settings(BaseSettings):
     APP_NAME: str = os.getenv("APP_NAME", "Langquence API")
