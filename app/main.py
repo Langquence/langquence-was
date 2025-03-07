@@ -1,4 +1,3 @@
-import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,6 +43,3 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
-
-if __name__ == "__main__":
-    uvicorn.run(settings.APP_EXECUTE_COMMAND, host=settings.APP_HOST, port=settings.APP_PORT, reload=settings.APP_RELOAD)
