@@ -24,5 +24,5 @@ async def correct_english_text(request: CorrectionRequest):
 
         raise HTTPException(
             status_code=500,
-            message={"error": "Failed to process correction request", "details": str(e)}
+            message={"error": "Failed to process correction request", "message": "Internal server error"}
         )
