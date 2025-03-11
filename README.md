@@ -159,6 +159,7 @@ To add new features to the application:
 2. Enhance security policies
 3. Optimize prompt token usage
 4. Refactoring the Architecture
+5. Connecting to the DB for saving requests
 
 ### Testing
 
