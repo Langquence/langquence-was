@@ -1,6 +1,6 @@
 from app.infrastructure.clients.alibaba.llm.qwen_client import correct_text
-from app.services.pattern_matching import validate_correction
-from app.services.feedback_generator import generate_feedback
+from app.domain.services.pattern_matching import validate_correction
+from app.domain.services.feedback_generator import generate_feedback
 from app.common.utils.logger import get_logger
 
 logger = get_logger(__name__)

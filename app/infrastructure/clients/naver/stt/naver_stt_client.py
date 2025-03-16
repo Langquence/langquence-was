@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from typing import Dict, Any
 import requests
 
-from app.services.speech_recognizer import SpeechRecognizer
+from app.domain.services.speech_recognizer import SpeechRecognizer
 from app.common.utils.logger import get_logger
 
 logger = get_logger(__name__)
