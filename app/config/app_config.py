@@ -28,4 +28,9 @@ class Settings(BaseSettings):
     # 로그 설정
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
+    # STT API
+    NAVER_CLOVA_STT_API_ID: str = os.getenv("NAVER_CLOVA_STT_API_ID", "")
+    NAVER_CLOVA_STT_API_SECRET: str = os.getenv("NAVER_CLOVA_STT_API_SECRET", "")
+    NAVER_CLOVA_STT_URL: str = os.getenv("NAVER_CLOVA_STT_URL", "")
+
 settings = Settings()
