@@ -1,4 +1,4 @@
-from app.infrastructure.clients.alibaba.llm.qwen_client import correct_text
+from app.infrastructure.clients.llm.alibaba.qwen_client import correct_text
 from app.domain.services.pattern_matching import validate_correction
 from app.domain.services.feedback_generator import generate_feedback
 from app.common.utils.logger import get_logger
