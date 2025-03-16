@@ -3,7 +3,7 @@ from typing import Protocol, Dict, Any
 class SpeechRecognizer(Protocol):
     """음성 인식 인터페이스"""
 
-    def recognize(self, audio_data: bytes, language: str) -> Dict[str, Any]:
+    async def recognize(self, audio_data: bytes, language: str) -> Dict[str, Any]:
         """
         음성 데이터를 텍스트로 변환
         
