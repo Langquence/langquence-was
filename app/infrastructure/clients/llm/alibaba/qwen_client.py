@@ -2,7 +2,7 @@ import os
 import json
 from openai import OpenAI
 from app.config.app_config import settings
-from app.consts.prompts import get_correction_prompt
+from app.infrastructure.clients.llm.prompts import get_correction_prompt
 from app.dto.schemas import CorrectionResponse
 from app.common.utils.logger import get_logger
 
