@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router
+from app.api.routes.routes import router
 from app.config.app_config import settings
 from app.common.utils.logger import get_logger
 

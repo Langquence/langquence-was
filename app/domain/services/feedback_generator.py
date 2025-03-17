@@ -2,7 +2,7 @@ from app.common.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-async def generate_feedback(correction: CorrectionResponse) -> CorrectionResponse:
+async def generate_feedback(correction: str) -> str:
     """교정 결과로부터 사용자 친화적인 피드백을 생성합니다.
     
     Args:
@@ -16,8 +16,8 @@ async def generate_feedback(correction: CorrectionResponse) -> CorrectionRespons
     """
     logger.info("Generating feedback for correction result")
     
-    if correction.needs_correction:
-        correction.explanation = enhance_explanation(correction.explanation)
+    # if correction.needs_correction:
+    #     correction.explanation = enhance_explanation(correction.explanation)
     
     return correction
 

@@ -1,18 +1,20 @@
-from fastapi import Depends
-
-from infrastructure.clients.llm.alibaba.qwen_client import correct_text
-from domain.services.pattern_matching import validate_correction
-from common.utils.logger import get_logger
-
-from infrastructure.clients.llm.llm_client import get_llm_client
+from typing import List
 
 from pydantic import BaseModel
-from typing import List
+
+from app.common.utils.logger import get_logger
+from app.domain.services.pattern_matching import validate_correction
+from app.infrastructure.clients.llm.alibaba.qwen_client import QwenTurboClient
+from app.infrastructure.clients.llm.llm_client import LlmClient
+from app.infrastructure.clients.stt.naver.naver_stt_client import NaverClovaSpeechRecognizer
+from app.infrastructure.clients.stt.speech_recognizer import SpeechRecognizer
 
 logger = get_logger(__name__)
 
+
 class CorrectionCommand(BaseModel):
     original: bytes
+
 
 class CorrectionResult(BaseModel):
     original: str
@@ -21,22 +23,22 @@ class CorrectionResult(BaseModel):
     explanation: str
     alternatives: List[str] = []
 
+
 async def process_correction_request(
         command: CorrectionCommand,
-        llm_client=Depends(get_llm_client)
-    ):
-    
+        speech_recognizer: SpeechRecognizer = NaverClovaSpeechRecognizer(),
+        llm_client: LlmClient = QwenTurboClient()
+):
     try:
         # 1. STT 결과 추출
-        text = command.original.decode("utf-8")
+        text = await speech_recognizer.recognize(audio_data=command.original)
 
         # 1. 텍스트 교정 (API 호출)
-        logger.info(f"Processing correction request: {text}")
         correction_result = await llm_client.correct_text(text)
-        
+
         # 2. 패턴 매칭 검증
         validated_result = await validate_correction(correction_result)
-        
+
         return CorrectionResult(
             original=validated_result.original,
             needs_correction=validated_result.needs_correction,
@@ -45,5 +47,6 @@ async def process_correction_request(
             alternatives=validated_result.alternatives
         )
     except Exception as e:
-        logger.error(f"Error processing request: {e}")
+        logger.error(f"process_correction_request 오류: {e}")
+
         raise e

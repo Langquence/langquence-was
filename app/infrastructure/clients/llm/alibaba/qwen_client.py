@@ -2,12 +2,12 @@ import json
 from openai import OpenAI
 from app.config.app_config import settings
 from app.infrastructure.clients.llm.prompts import get_correction_prompt
-from app.infrastructure.clients.llm.llm_client import LlmResponse
+from app.infrastructure.clients.llm.llm_client import LlmClient, LlmResponse
 from app.common.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-class AlibabaTurboClient:
+class QwenTurboClient(LlmClient):
     """Alibaba Tongyi 모델을 사용하는 LLM 서비스"""
     
     def __init__(self):
