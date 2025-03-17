@@ -1,6 +1,10 @@
+from fastapi import Depends
+
 from typing import Protocol
 from pydantic import BaseModel
 from typing import List
+
+from llm.alibaba.qwen_client import QwenTurboClient
 
 class LlmResponse(BaseModel):
     original: str
@@ -15,3 +19,5 @@ class LlmClient(Protocol):
         """입력 텍스트에 대한 교정을 수행합니다."""
         ...
         
+def get_llm_client() -> LlmClient:
+    return QwenTurboClient()
