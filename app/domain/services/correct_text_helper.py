@@ -1,13 +1,25 @@
 from fastapi import Depends
 
-from app.infrastructure.clients.llm.alibaba.qwen_client import correct_text
-from app.domain.services.pattern_matching import validate_correction
-from app.common.utils.logger import get_logger
-from domain.command.correct_command import CorrectionCommand
+from infrastructure.clients.llm.alibaba.qwen_client import correct_text
+from domain.services.pattern_matching import validate_correction
+from common.utils.logger import get_logger
 
 from infrastructure.clients.llm.llm_client import get_llm_client
 
+from pydantic import BaseModel
+from typing import List
+
 logger = get_logger(__name__)
+
+class CorrectionCommand(BaseModel):
+    original: bytes
+
+class CorrectionResult(BaseModel):
+    original: str
+    needs_correction: bool
+    corrected: str
+    explanation: str
+    alternatives: List[str] = []
 
 async def process_correction_request(
         command: CorrectionCommand,
@@ -25,7 +37,13 @@ async def process_correction_request(
         # 2. 패턴 매칭 검증
         validated_result = await validate_correction(correction_result)
         
-        return validated_result
+        return CorrectionResult(
+            original=validated_result.original,
+            needs_correction=validated_result.needs_correction,
+            corrected=validated_result.corrected,
+            explanation=validated_result.explanation,
+            alternatives=validated_result.alternatives
+        )
     except Exception as e:
         logger.error(f"Error processing request: {e}")
         raise e

@@ -1,9 +1,21 @@
-from app.dto.schemas import CorrectionResponse
 from app.common.utils.logger import get_logger
+from pydantic import BaseModel
+from typing import List
 
 logger = get_logger(__name__)
 
-async def validate_correction(correction: CorrectionResponse) -> CorrectionResponse:
+class PatternMatchingCommand(BaseModel):
+    original: str
+    needs_correction: bool
+
+class PatternMatchingResult(BaseModel):
+    original: str
+    needs_correction: bool
+    corrected: str
+    explanation: str
+    alternatives: List[str] = []
+
+async def validate_correction(correction: PatternMatchingCommand) -> PatternMatchingResult:
     """교정 결과를 검증하고 개선합니다.
     
     Args:
@@ -14,7 +26,7 @@ async def validate_correction(correction: CorrectionResponse) -> CorrectionRespo
 
     Todo:
         * 패턴 매칭 로직을 구현합니다.
-
+        * 이 기능은 추후 문장 단위로 사용될 가능성이 높습니다.
     """
     logger.info(f"Validating correction for: {correction.original}")
     
@@ -52,7 +64,7 @@ def should_be_corrected(text: str) -> bool:
     
     return False
 
-def correct_common_errors(correction: CorrectionResponse) -> CorrectionResponse:
+def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatchingResult:
     """흔한 오류를 수정합니다.
     
     Args:
@@ -81,7 +93,7 @@ def correct_common_errors(correction: CorrectionResponse) -> CorrectionResponse:
             alternatives = [text.replace(error, correction) + " (recommended)"]
             break
     
-    return CorrectionResponse(
+    return PatternMatchingResult(
         original=text,
         needs_correction=needs_correction,
         corrected=corrected,
