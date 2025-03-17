@@ -16,7 +16,7 @@ class NaverClovaSpeechRecognizer(SpeechRecognizer):
         self.client_secret = settings.NAVER_CLOVA_STT_API_SECRET
         self.api_url = settings.NAVER_CLOVA_STT_URL
 
-    async def recognize(self, audio_data: bytes, language: str = "Eng") -> Dict[str, Any]:
+    async def recognize(self, audio_data: bytes, language: str = "Eng") -> str:
         """음성 데이터를 텍스트로 변환"""
         headers = {
             "X-NCP-APIGW-API-KEY-ID": self.client_id,
@@ -44,4 +44,4 @@ class NaverClovaSpeechRecognizer(SpeechRecognizer):
                 detail=f"API 호출 오류: {error_message}"
             )
     
-        return response.json()
+        return response.text
