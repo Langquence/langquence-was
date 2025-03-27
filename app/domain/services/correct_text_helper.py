@@ -6,6 +6,8 @@ from app.common.utils.logger import get_logger
 from app.domain.services.pattern_matching import validate_correction
 from app.infrastructure.clients.llm.alibaba.qwen_client import QwenTurboClient
 from app.infrastructure.clients.llm.llm_client import LlmClient
+from app.infrastructure.clients.storage.audio_storage_client import AudioStorageClient
+from app.infrastructure.clients.storage.local.local_audio_storage_client import LocalAudioStorageClient
 from app.infrastructure.clients.stt.naver.naver_stt_client import NaverClovaSpeechRecognizer
 from app.infrastructure.clients.stt.speech_recognizer import SpeechRecognizer
 
@@ -27,8 +29,12 @@ class CorrectionResult(BaseModel):
 async def process_correction_request(
         command: CorrectionCommand,
         speech_recognizer: SpeechRecognizer = NaverClovaSpeechRecognizer(),
-        llm_client: LlmClient = QwenTurboClient()
+        llm_client: LlmClient = QwenTurboClient(),
+        audio_storage_client: AudioStorageClient = LocalAudioStorageClient()
 ):
+    saved_url = await audio_storage_client.save_audio(command.original, "wav")
+    logger.info(f"저장된 오디오 파일 경로: {saved_url}")
+
     try:
         # 1. STT 결과 추출
         text = await speech_recognizer.recognize(audio_data=command.original)

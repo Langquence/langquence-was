@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, Request
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Request, Header
 
 from app.api.dto.correct_dto import CorrectionResponse, ErrorResponse
 from app.common.aop.ApiLogRouter import ApiLogRouter
@@ -11,8 +13,19 @@ router = APIRouter(route_class=ApiLogRouter)
 
 
 @router.post("/correct", response_model=CorrectionResponse, responses={500: {"model": ErrorResponse}})
-async def correct_english_text(request: Request):
+async def correct_english_text(
+        request: Request,
+        content_type: Optional[str] = Header(None)
+):
+    allowed_content_types = ["application/octet-stream", "audio/wav"]
+    if content_type not in allowed_content_types:
+        raise HTTPException(
+            status_code=415,
+            detail=f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported."
+        )
+
     audio_data = await request.body()
+    logger.info(f"Received audio data size: {len(audio_data)} bytes")
 
     try:
         # 1. 텍스트 교정
