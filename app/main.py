@@ -1,9 +1,14 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.api.routes.routes import router
 from app.config.app_config import settings
 from app.common.utils.logger import get_logger
+from app.common.exception.base_exception import BaseException
+from app.common.exception.global_exception_handler import base_exception_handler, http_exception_handler, validation_exception_handler, global_exception_handler
 
 logger = get_logger(__name__)
 
@@ -35,6 +40,11 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix=settings.API_PREFIX)
+
+app.add_exception_handler(BaseException, base_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, global_exception_handler)
 
 @app.get("/")
 async def root():
