@@ -6,6 +6,7 @@ from app.api.dto.correct_dto import CorrectionResponse, ErrorResponse
 from app.common.aop.ApiLogRouter import ApiLogRouter
 from app.common.utils.logger import get_logger
 from app.domain.services.correct_text_helper import process_correction_request, CorrectionCommand
+from app.common.exception.base_exception import UnsupportedMediaTypeException
 
 logger = get_logger(__name__)
 
@@ -19,10 +20,11 @@ async def correct_english_text(
 ):
     allowed_content_types = ["application/octet-stream", "audio/wav"]
     if content_type not in allowed_content_types:
-        raise HTTPException(
-            status_code=415,
-            detail=f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported."
-        )
+        # raise HTTPException(
+        #     status_code=415,
+        #     detail=f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported."
+        # )
+        raise UnsupportedMediaTypeException(f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported.")
 
     audio_data = await request.body()
     logger.info(f"Received audio data size: {len(audio_data)} bytes")
