@@ -1,6 +1,7 @@
 from typing import List
 
 from pydantic import BaseModel
+from tsidpy import TSID
 
 from app.common.utils.logger import get_logger
 from app.domain.services.pattern_matching import validate_correction
@@ -19,6 +20,7 @@ class CorrectionCommand(BaseModel):
 
 
 class CorrectionResult(BaseModel):
+    id: int
     original: str
     needs_correction: bool
     corrected: str
@@ -39,13 +41,17 @@ async def process_correction_request(
         # 1. STT 결과 추출
         text = await speech_recognizer.recognize(audio_data=command.original)
 
-        # 1. 텍스트 교정 (API 호출)
+        # 2. 텍스트 교정 (API 호출)
         correction_result = await llm_client.correct_text(text)
 
-        # 2. 패턴 매칭 검증
+        # 3. 패턴 매칭 검증
         validated_result = await validate_correction(correction_result)
+        
+        # 4. DB 저장 (추후 수정)
+        # correction_entity = correction_repository.save()
 
         return CorrectionResult(
+            id=TSID.create().number,
             original=validated_result.original,
             needs_correction=validated_result.needs_correction,
             corrected=validated_result.corrected,

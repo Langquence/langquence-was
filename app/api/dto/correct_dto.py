@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
 class CorrectionResponse(BaseModel):
+    id: int
     original: str
     needs_correction: bool
     corrected: str
