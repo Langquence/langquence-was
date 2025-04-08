@@ -32,6 +32,7 @@ async def correct_english_text(
         # final_result = await generate_feedback(result)
 
         return CorrectionResponse(
+            id=draft_result.id,
             original=draft_result.original,
             needs_correction=draft_result.needs_correction,
             corrected=draft_result.corrected,
