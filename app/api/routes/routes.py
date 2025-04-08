@@ -20,10 +20,6 @@ async def correct_english_text(
 ):
     allowed_content_types = ["application/octet-stream", "audio/wav"]
     if content_type not in allowed_content_types:
-        # raise HTTPException(
-        #     status_code=415,
-        #     detail=f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported."
-        # )
         raise UnsupportedMediaTypeException(f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported.")
 
     audio_data = await request.body()
