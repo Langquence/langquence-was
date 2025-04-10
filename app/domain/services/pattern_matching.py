@@ -51,13 +51,7 @@ def should_be_corrected(text: str) -> bool:
     Returns:
         bool: True if errors are found, False otherwise.
     """
-
-    common_errors = [
-        ("I have work", "I have worked"),
-        ("I am interesting in", "I am interested in"),
-        ("I am boring", "I am bored"),
-        ("since [0-9]+ years", "for [0-9]+ years"),
-    ]
+    common_errors = get_common_errors()
     
     for error_pattern, _ in common_errors:
         if error_pattern in text.lower():
@@ -81,11 +75,7 @@ def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatching
     explanation = "This expression was corrected by the pattern matching engine."
     alternatives = []
     
-    common_errors = [
-        ("I have work", "I have worked", "Changed 'work' to 'worked' for correct present perfect tense."),
-        ("I am interesting in", "I am interested in", "Changed 'interesting' to 'interested' for correct participle usage."),
-        ("I am boring", "I am bored", "Changed 'boring' to 'bored' to correctly express feeling rather than causing boredom."),
-    ]
+    common_errors = get_common_errors()
     
     for error, correction, reason in common_errors:
         if error in text:
@@ -93,6 +83,7 @@ def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatching
             explanation = reason
             needs_correction = True
             alternatives = [text.replace(error, correction) + " (recommended)"]
+            
             logger.info(f"Corrected common error: {error} -> {correction}")
             break
     
@@ -103,3 +94,16 @@ def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatching
         explanation=explanation,
         alternatives=alternatives
     )
+
+def get_common_errors() -> List[tuple]:
+    """
+    Returns a list of common grammatical errors and their corrections.
+
+    Returns:
+        List[tuple]: A list of tuples containing error patterns, corrections, and explanations.
+    """
+    return [
+        ("I have work", "I have worked", "Changed 'work' to 'worked' for correct present perfect tense."),
+        ("I am interesting in", "I am interested in", "Changed 'interesting' to 'interested' for correct participle usage."),
+        ("I am boring", "I am bored", "Changed 'boring' to 'bored' to correctly express feeling rather than causing boredom."),
+    ]
