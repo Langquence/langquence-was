@@ -33,9 +33,24 @@ async def process_correction_request(
         speech_recognizer: SpeechRecognizer = NaverClovaSpeechRecognizer(),
         llm_client: LlmClient = QwenTurboClient(),
         audio_storage_client: AudioStorageClient = LocalAudioStorageClient()
-):
+) -> CorrectionResult:
+    """
+    Processes a correction request by performing speech-to-text, text correction, and validation.
+
+    Args:
+        command (CorrectionCommand): The command containing the original audio data.
+        speech_recognizer (SpeechRecognizer): The speech recognizer client.
+        llm_client (LlmClient): The language model client for text correction.
+        audio_storage_client (AudioStorageClient): The client for storing audio data.
+
+    Returns:
+        CorrectionResult: The result of the correction process.
+
+    Raises:
+        Exception: If any error occurs during the process.
+    """
     saved_url = await audio_storage_client.save_audio(command.original, "wav")
-    logger.info(f"저장된 오디오 파일 경로: {saved_url}")
+    logger.info(f"Saved audio file path: {saved_url}")
 
     try:
         # 1. STT 결과 추출
@@ -59,6 +74,5 @@ async def process_correction_request(
             alternatives=validated_result.alternatives
         )
     except Exception as e:
-        logger.error(f"process_correction_request 오류: {e}")
-
+        logger.error(f"Error in process_correction_request: {e}")
         raise e
