@@ -16,17 +16,18 @@ class PatternMatchingResult(BaseModel):
     alternatives: List[str] = []
 
 async def validate_correction(correction: PatternMatchingCommand) -> PatternMatchingResult:
-    """교정 결과를 검증하고 개선합니다.
-    
+    """
+    Validates and improves the correction result.
+
     Args:
-        correction (CorrectionResponse): 교정 결과
-    
+        correction (PatternMatchingCommand): The correction result to validate.
+
     Returns:
-        CorrectionResponse: 검증 및 개선된 교정 결과
+        PatternMatchingResult: The validated and improved correction result.
 
     Todo:
-        * 패턴 매칭 로직을 구현합니다.
-        * 이 기능은 추후 문장 단위로 사용될 가능성이 높습니다.
+        * Implement pattern matching logic.
+        * This function may be used at the sentence level in the future.
     """
     logger.info(f"Validating correction for: {correction.original}")
     
@@ -36,27 +37,21 @@ async def validate_correction(correction: PatternMatchingCommand) -> PatternMatc
     # 임시로 구현한 검증 로직
     if not correction.needs_correction and should_be_corrected(correction.original):
         logger.warning(f"Model failed to detect error in: {correction.original}")
-
         return correct_common_errors(correction)
     
     return correction
 
 def should_be_corrected(text: str) -> bool:
-    """텍스트에 흔한 문법 오류가 있는지 확인합니다.
-    
+    """
+    Checks for common grammatical errors in the text.
+
     Args:
-        text (str): 텍스트
+        text (str): The text to check.
 
     Returns:
-        bool: 오류가 있는 경우 True, 없는 경우 False
+        bool: True if errors are found, False otherwise.
     """
-
-    common_errors = [
-        ("I have work", "I have worked"),
-        ("I am interesting in", "I am interested in"),
-        ("I am boring", "I am bored"),
-        ("since [0-9]+ years", "for [0-9]+ years"),
-    ]
+    common_errors = get_common_errors()
     
     for error_pattern, _ in common_errors:
         if error_pattern in text.lower():
@@ -65,13 +60,14 @@ def should_be_corrected(text: str) -> bool:
     return False
 
 def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatchingResult:
-    """흔한 오류를 수정합니다.
-    
+    """
+    Corrects common errors in the correction result.
+
     Args:
-        correction (CorrectionResponse): 교정 결과
-    
+        correction (PatternMatchingCommand): The correction result to improve.
+
     Returns:
-        CorrectionResponse: 수정된 교정 결과
+        PatternMatchingResult: The corrected correction result.
     """
     text = correction.original
     needs_correction = False
@@ -79,11 +75,7 @@ def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatching
     explanation = "This expression was corrected by the pattern matching engine."
     alternatives = []
     
-    common_errors = [
-        ("I have work", "I have worked", "Changed 'work' to 'worked' for correct present perfect tense."),
-        ("I am interesting in", "I am interested in", "Changed 'interesting' to 'interested' for correct participle usage."),
-        ("I am boring", "I am bored", "Changed 'boring' to 'bored' to correctly express feeling rather than causing boredom."),
-    ]
+    common_errors = get_common_errors()
     
     for error, correction, reason in common_errors:
         if error in text:
@@ -91,6 +83,8 @@ def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatching
             explanation = reason
             needs_correction = True
             alternatives = [text.replace(error, correction) + " (recommended)"]
+            
+            logger.info(f"Corrected common error: {error} -> {correction}")
             break
     
     return PatternMatchingResult(
@@ -100,3 +94,16 @@ def correct_common_errors(correction: PatternMatchingCommand) -> PatternMatching
         explanation=explanation,
         alternatives=alternatives
     )
+
+def get_common_errors() -> List[tuple]:
+    """
+    Returns a list of common grammatical errors and their corrections.
+
+    Returns:
+        List[tuple]: A list of tuples containing error patterns, corrections, and explanations.
+    """
+    return [
+        ("I have work", "I have worked", "Changed 'work' to 'worked' for correct present perfect tense."),
+        ("I am interesting in", "I am interested in", "Changed 'interesting' to 'interested' for correct participle usage."),
+        ("I am boring", "I am bored", "Changed 'boring' to 'bored' to correctly express feeling rather than causing boredom."),
+    ]

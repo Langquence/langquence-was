@@ -3,16 +3,17 @@ from app.common.utils.logger import get_logger
 logger = get_logger(__name__)
 
 async def generate_feedback(correction: str) -> str:
-    """교정 결과로부터 사용자 친화적인 피드백을 생성합니다.
-    
+    """
+    Generates user-friendly feedback from the correction result.
+
     Args:
-        correction (CorrectionResponse): OpenAI 교정 결과
+        correction (str): The correction result string.
 
     Returns:
-        CorrectionResponse: 피드백이 추가된 교정 결과
+        str: The feedback-enhanced correction result.
 
     Todo:
-        * 더 복잡한 피드백 생성 로직을 구현합니다. (현재는 단순 응답 형식 가공)
+        * Implement more complex feedback generation logic.
     """
     logger.info("Generating feedback for correction result")
     
@@ -22,13 +23,21 @@ async def generate_feedback(correction: str) -> str:
     return correction
 
 def enhance_explanation(explanation: str) -> str:
-    """설명을 더 교육적으로 강화합니다.
-    
+    """
+    Enhances the explanation to be more educational.
+
+    Args:
+        explanation (str): The original explanation string.
+
+    Returns:
+        str: The enhanced explanation string.
+
     Todo:
-        * 더 많은 교육적인 설명을 추가해야 합니다.
+        * Add more educational content to the explanation.
     """
     if not explanation.endswith('.'):
         explanation += '.'
         
     enhanced = explanation + " This change will make your English sound more natural in interview settings."
+    logger.info("Enhanced explanation generated")
     return enhanced

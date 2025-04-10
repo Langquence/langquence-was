@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Request, Header
+from fastapi import APIRouter, HTTPException, Request, Header, Depends
 
 from app.api.dto.correct_dto import CorrectionResponse, ErrorResponse
 from app.common.aop.ApiLogRouter import ApiLogRouter
@@ -13,14 +13,34 @@ logger = get_logger(__name__)
 router = APIRouter(route_class=ApiLogRouter)
 
 
+def get_allowed_content_types() -> list:
+    return ["application/octet-stream", "audio/wav"]
+
+
 @router.post("/correct", response_model=CorrectionResponse, responses={500: {"model": ErrorResponse}})
 async def correct_english_text(
         request: Request,
-        content_type: Optional[str] = Header(None)
+        content_type: Optional[str] = Header(None),
+        allowed_content_types: list = Depends(get_allowed_content_types)
 ):
-    allowed_content_types = ["application/octet-stream", "audio/wav"]
+    """
+    Corrects English text from audio data.
+
+    Args:
+        request (Request): The request object containing audio data.
+        content_type (Optional[str]): The content type of the request header.
+        allowed_content_types (list): List of allowed content types.
+
+    Returns:
+        CorrectionResponse: The response containing correction details.
+
+    Raises:
+        HTTPException: If the content type is not supported or an internal error occurs.
+    """
     if content_type not in allowed_content_types:
-        raise UnsupportedMediaTypeException(f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported.")
+        raise UnsupportedMediaTypeException(
+            f"Unsupported media type. Only {', '.join(allowed_content_types)} are supported."
+        )
 
     audio_data = await request.body()
     logger.info(f"Received audio data size: {len(audio_data)} bytes")
@@ -28,6 +48,7 @@ async def correct_english_text(
     try:
         # 1. 텍스트 교정
         draft_result = await process_correction_request(command=CorrectionCommand(original=audio_data))
+        
         # 2. 피드백 생성 (추후 교정)
         # final_result = await generate_feedback(result)
 
@@ -42,6 +63,6 @@ async def correct_english_text(
     except Exception as e:
         logger.error(f"Error processing request: {e}")
         import traceback
-        logger.error(f"상세 오류: \n{traceback.format_exc()}")
+        logger.error(f"Detailed error: \n{traceback.format_exc()}")
 
         raise HTTPException(status_code=500, detail="Internal server error")
