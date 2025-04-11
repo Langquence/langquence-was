@@ -2,7 +2,7 @@ import json
 from openai import OpenAI
 from app.config.app_config import settings
 from app.infrastructure.clients.llm.prompts import get_correction_prompt
-from app.infrastructure.clients.llm.llm_client import LlmClient, LlmResponse
+from app.infrastructure.clients.llm.llm_client import LlmClient, LlmResponse, SentenceCorrection, CorrectionDetail
 from app.common.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -39,13 +39,18 @@ class QwenTurboClient(LlmClient):
         except Exception as e:
             logger.error(f"API call failed: {e}")
 
-            return LlmResponse(
+            sentence = SentenceCorrection(
                 original=input_text,
                 boundary_corrected=input_text,
                 needs_correction=False,
-                corrected=input_text,
-                explanation=f"API call failed: {str(e)}",
+                corrected="",
+                explanation=[],
                 alternatives=[]
+            )
+        
+            return LlmResponse(
+                sentences=[sentence], 
+                error=f"API call failed: {str(e)}"
             )
 
     """LLM 응답을 파싱합니다."""
@@ -53,25 +58,35 @@ class QwenTurboClient(LlmClient):
         logger.debug(f"Parsing response: {response}")
         
         try:
-            start_idx = response.find('{')
+            start_idx = response.find('[')
             if start_idx == -1:
                 raise ValueError("No JSON found in response")
                 
-            end_idx = response.rfind('}')
+            end_idx = response.rfind(']')
             if end_idx == -1 or end_idx < start_idx:
                 raise ValueError("Invalid JSON structure")
                 
             json_str = response[start_idx:end_idx+1]
-            result = json.loads(json_str)
+            result_array = json.loads(json_str)
             
-            return LlmResponse(
-                original=result.get("original", input_text),
-                boundary_corrected=result.get("boundary_corrected", input_text),
-                needs_correction=result.get("needs_correction", False),
-                corrected=result.get("corrected", input_text),
-                explanation=result.get("explanation", "No explanation provided"),
-                alternatives=result.get("alternatives", [])
-            )
+            sentences = []
+            for item in result_array:
+                # CorrectionDetail 객체로 explanation 변환
+                explanation_list = [
+                    CorrectionDetail(**exp) for exp in item.get("explanation", [])
+                ]
+                
+                sentence = SentenceCorrection(
+                    original=item.get("original", ""),
+                    boundary_corrected=item.get("boundary_corrected", ""),
+                    needs_correction=item.get("needs_correction", False),
+                    corrected=item.get("corrected", ""),
+                    explanation=explanation_list,
+                    alternatives=item.get("alternatives", [])
+                )
+                sentences.append(sentence)
+            
+                return LlmResponse(sentences=sentences)
         except Exception as e:
             logger.error(f"Failed to parse response: {e}")
             return LlmResponse(
