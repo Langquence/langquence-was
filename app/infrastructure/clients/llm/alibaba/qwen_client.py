@@ -33,7 +33,7 @@ class QwenTurboClient(LlmClient):
             
             result = completion.choices[0].message.content
             
-            parsed_result = self.parse_llm_response(result, input_text)
+            parsed_result = self._parse_llm_response(result, input_text)
             return parsed_result
             
         except Exception as e:
@@ -41,6 +41,7 @@ class QwenTurboClient(LlmClient):
 
             return LlmResponse(
                 original=input_text,
+                boundary_corrected=input_text,
                 needs_correction=False,
                 corrected=input_text,
                 explanation=f"API call failed: {str(e)}",
@@ -48,7 +49,7 @@ class QwenTurboClient(LlmClient):
             )
 
     """LLM 응답을 파싱합니다."""
-    def parse_llm_response(self, response: str, input_text: str) -> LlmResponse:
+    def _parse_llm_response(self, response: str, input_text: str) -> LlmResponse:
         logger.debug(f"Parsing response: {response}")
         
         try:
@@ -65,6 +66,7 @@ class QwenTurboClient(LlmClient):
             
             return LlmResponse(
                 original=result.get("original", input_text),
+                boundary_corrected=result.get("boundary_corrected", input_text),
                 needs_correction=result.get("needs_correction", False),
                 corrected=result.get("corrected", input_text),
                 explanation=result.get("explanation", "No explanation provided"),
@@ -74,6 +76,7 @@ class QwenTurboClient(LlmClient):
             logger.error(f"Failed to parse response: {e}")
             return LlmResponse(
                 original=input_text,
+                boundary_corrected=input_text,
                 needs_correction=False,
                 corrected=input_text,
                 explanation="Failed to parse model response",

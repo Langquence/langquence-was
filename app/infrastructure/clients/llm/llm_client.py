@@ -4,6 +4,7 @@ from typing import List
 
 class LlmResponse(BaseModel):
     original: str
+    boundary_corrected: str
     needs_correction: bool
     corrected: str
     explanation: str
