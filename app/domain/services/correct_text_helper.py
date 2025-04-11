@@ -22,6 +22,7 @@ class CorrectionCommand(BaseModel):
 class CorrectionResult(BaseModel):
     id: int
     original: str
+    boundary_corrected: str
     needs_correction: bool
     corrected: str
     explanation: str
@@ -68,6 +69,7 @@ async def process_correction_request(
         return CorrectionResult(
             id=TSID.create().number,
             original=validated_result.original,
+            boundary_corrected=validated_result.boundary_corrected,
             needs_correction=validated_result.needs_correction,
             corrected=validated_result.corrected,
             explanation=validated_result.explanation,

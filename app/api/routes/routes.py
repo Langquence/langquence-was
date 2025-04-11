@@ -55,6 +55,7 @@ async def correct_english_text(
         return CorrectionResponse(
             id=draft_result.id,
             original=draft_result.original,
+            boundary_corrected=draft_result.boundary_corrected,
             needs_correction=draft_result.needs_correction,
             corrected=draft_result.corrected,
             explanation=draft_result.explanation,
