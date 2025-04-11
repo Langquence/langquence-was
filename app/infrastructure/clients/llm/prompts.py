@@ -18,69 +18,106 @@ Follow this two-step correction process:
    - Subject-verb agreement issues
    - Awkward phrasing that sounds unnatural to native speakers
    - Missing sentence boundaries and punctuation (if multiple sentences are run together)
+3. For each identified error in a sentence, provide detailed correction information
 
 In your response, include:
 - "original": The raw text from STT without any changes
 - "boundary_corrected": Text with only sentence boundaries and capitalization fixed
 - "needs_correction": True if there are actual language errors beyond STT formatting issues
-- "corrected": The fully corrected text with both formatting and language errors fixed
-- "explanation": PROVIDE EXPLANATION IN KOREAN explaining ONLY the language errors (not STT formatting fixes)
-- "alternatives": Other possible correct expressions
+- "corrected": The fully corrected text for this sentence (empty string if needs_correction is false)
+- "explanation": Array of error objects, each containing:
+  * "error": The specific error text
+  * "correct": The corrected version of that specific text
+  * "reason": Brief explanation in Korean why correction is needed
+- "alternatives": Other possible correct expressions (empty array if needs_correction is false)
+
+IMPORTANT: If needs_correction is false, return empty values for "corrected", "explanation", and "alternatives" to save tokens.
 
 Here are examples of different error types:
 
 Example with verb tense error:
-Original: "i work in this company since 2020"
-{{
-  "original": "i work in this company since 2020",
-  "boundary_corrected": "I work in this company since 2020.",
-  "needs_correction": true,
-  "corrected": "I have worked in this company since 2020.",
-  "explanation": "'since'와 함께 사용할 때는 현재완료 시제가 필요합니다. 과거에 시작하여 현재까지 계속되는 행동을 표현하기 때문입니다.",
-  "alternatives": ["I have been working in this company since 2020."]
-}}
-
-Example with participle confusion:
-Original: "the movie was very boring so i felt sleeping"
-{{
-  "original": "the movie was very boring so i felt sleeping",
-  "boundary_corrected": "The movie was very boring so I felt sleeping.",
-  "needs_correction": true,
-  "corrected": "The movie was very boring so I felt sleepy.",
-  "explanation": "감정 상태를 표현할 때는 분사형인 'sleeping'이 아니라 형용사인 'sleepy'를 사용해야 합니다.",
-  "alternatives": ["The movie was very boring so I almost fell asleep."]
-}}
+Original: "i'm looking for job for a month i'm little blue"
+[
+  {
+    "original": "i'm looking for job for a month",
+    "boundary_corrected": "I'm looking for job for a month.",
+    "needs_correction": true,
+    "corrected": "I've been looking for a job for a month.",
+    "explanation": [
+      {
+        "error": "I'm looking",
+        "correct": "I've been looking",
+        "reason": "특정 기간('for a month') 동안 계속된 행동을 표현할 때는 현재완료진행형이 더 자연스럽습니다."
+      },
+      {
+        "error": "for job",
+        "correct": "for a job",
+        "reason": "가산명사 'job' 앞에는 부정관사 'a'가 필요합니다."
+      }
+    ],
+    "alternatives": ["I'm searching for a job for a month."]
+  },
+  {
+    "original": "i'm little blue",
+    "boundary_corrected": "I'm little blue.",
+    "needs_correction": true,
+    "corrected": "I'm a little blue.",
+    "explanation": [
+      {
+        "error": "little blue",
+        "correct": "a little blue",
+        "reason": "'little'이 형용사로 사용될 때 'a little'의 형태로 사용되어야 합니다."
+      }
+    ],
+    "alternatives": ["I'm feeling a bit down."]
+  }
+]
 
 Example with only STT formatting issues (no grammar errors):
-Original: "i've been looking for a job for a month i'm a little blue"
-{{
-  "original": "i've been looking for a job for a month i'm a little blue",
-  "boundary_corrected": "I've been looking for a job for a month. I'm a little blue.",
-  "needs_correction": false,
-  "corrected": "I've been looking for a job for a month. I'm a little blue.",
-  "explanation": "문법적으로 올바른 표현입니다.",
-  "alternatives": ["I've been looking for a job for a month, and I'm feeling a little blue."]
-}}
+Original: "i graduated from university in 2018 i'm looking for my first job"
+[
+  {
+    "original": "i graduated from university in 2018",
+    "boundary_corrected": "I graduated from university in 2018.",
+    "needs_correction": false,
+    "corrected": "",
+    "explanation": [],
+    "alternatives": []
+  },
+  {
+    "original": "i'm looking for my first job",
+    "boundary_corrected": "I'm looking for my first job.",
+    "needs_correction": false,
+    "corrected": "",
+    "explanation": [],
+    "alternatives": []
+  }
+]
 
-Example with both STT issues and actual language errors:
-Original: "i looking for job for month i'm little blue"
-{{
-  "original": "i looking for job for month i'm little blue",
-  "boundary_corrected": "I looking for job for month. I'm little blue.",
-  "needs_correction": true,
-  "corrected": "I've been looking for a job for a month. I'm a little blue.",
-  "explanation": "현재완료진행형(have been looking)이 필요하고, 'job'과 'month', 'little blue' 앞에 부정관사 'a'가 필요합니다.",
-  "alternatives": ["I'm looking for a job for a month. I'm a little blue."]
-}}
-
-Example that is already correct and properly formatted:
-Original: "I graduated from university in 2018."
-{{
-  "original": "I graduated from university in 2018.",
-  "boundary_corrected": "I graduated from university in 2018.",
-  "needs_correction": false,
-  "corrected": "I graduated from university in 2018.",
-  "explanation": "문법적으로 올바른 표현입니다.",
-  "alternatives": []
-}}
+Example with mixed corrections:
+Original: "i work here since 2020 i love my job"
+[
+  {
+    "original": "i work here since 2020",
+    "boundary_corrected": "I work here since 2020.",
+    "needs_correction": true,
+    "corrected": "I have worked here since 2020.",
+    "explanation": [
+      {
+        "error": "I work",
+        "correct": "I have worked",
+        "reason": "'since'와 함께 사용할 때는 현재완료 시제가 필요합니다. 과거에 시작하여 현재까지 계속되는 행동을 표현하기 때문입니다."
+      }
+    ],
+    "alternatives": ["I have been working here since 2020."]
+  },
+  {
+    "original": "i love my job",
+    "boundary_corrected": "I love my job.",
+    "needs_correction": false,
+    "corrected": "",
+    "explanation": [],
+    "alternatives": []
+  }
+]
 """
