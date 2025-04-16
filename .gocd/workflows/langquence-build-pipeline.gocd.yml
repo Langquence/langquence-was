@@ -9,35 +9,30 @@ pipelines:
     materials:
       git:
         git: https://github.com/Langquence/langquence-was.git
-        branch: feat/apply-gocd-pipeline # for testing
+        branch: dev
     stages:
       - build:
           clean_workspace: true
           jobs:
             setUp:
-              tasks: ## 현재 존재하는 langquence-was-dev 컨테이너를 삭제하고 새로 생성
+              tasks:
                 - exec:
                     command: docker
                     arguments:
                       - rm
                       - -f
-                      - langquence-was
+                      - langquence-was-dev
                 - exec:
                     command: sh
                     arguments:
                       - -c
                       - cp /home/go/.env .env
                 - exec:
-                    command: sh
-                    arguments:
-                      - -c
-                      - cat .env
-                - exec:
                     command: docker
                     arguments:
                       - build
                       - -t
-                      - langquence-was:local
+                      - langquence-was-dev:local
                       - .
                 - exec:
                     command: docker
@@ -50,4 +45,4 @@ pipelines:
                       - 8090:8090
                       - --env-file
                       - .env
-                      - langquence-was:local
+                      - langquence-was-dev:local
