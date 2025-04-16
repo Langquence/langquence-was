@@ -1,0 +1,47 @@
+format_version: 10
+
+pipelines:
+  langquence-build-pipeline:
+    group: defaultGroup
+    display_order: 10
+    lock_template: ${COUNT}
+    lock_behavior: none
+    materials:
+      git:
+        git: https://github.com/Langquence/langquence-was.git
+        branch: feat/apply-gocd-pipeline # for testing
+    stages:
+      - build:
+          clean_workspace: true
+          jobs:
+            setUp:
+              tasks:
+                - exec:
+                    command: sh
+                    arguments:
+                      - -c
+                      - cp /home/go/.env .env
+                - exec:
+                    command: sh
+                    arguments:
+                      - -c
+                      - cat .env
+                - exec:
+                    command: docker
+                    arguments:
+                      - build
+                      - -t
+                      - langquence-was:local
+                      - .
+                - exec:
+                    command: docker
+                    arguments:
+                      - run
+                      - -d
+                      - --name
+                      - langquence-was
+                      - -p
+                      - 8080:8080
+                      - --env-file
+                      - .env
+                      - langquence-was:local
