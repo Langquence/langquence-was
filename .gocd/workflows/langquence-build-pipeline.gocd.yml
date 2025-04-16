@@ -15,7 +15,13 @@ pipelines:
           clean_workspace: true
           jobs:
             setUp:
-              tasks:
+              tasks: ## 현재 존재하는 langquence-was-dev 컨테이너를 삭제하고 새로 생성
+                - exec:
+                    command: docker
+                    arguments:
+                      - rm
+                      - -f
+                      - langquence-was
                 - exec:
                     command: sh
                     arguments:
@@ -39,9 +45,9 @@ pipelines:
                       - run
                       - -d
                       - --name
-                      - langquence-was
+                      - langquence-was-dev
                       - -p
-                      - 8080:8080
+                      - 8090:8090
                       - --env-file
                       - .env
                       - langquence-was:local
