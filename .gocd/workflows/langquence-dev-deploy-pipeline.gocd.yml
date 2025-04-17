@@ -1,7 +1,7 @@
 format_version: 10
 
 pipelines:
-  langquence-build-pipeline:
+  langquence-dev-deploy-pipeline:
     group: defaultGroup
     display_order: 10
     lock_template: ${COUNT}
