@@ -1,10 +1,4 @@
 format_version: 10
-environments:
-  sdk-environment:
-    environment_variables:
-      GITHUB_TOKEN: "{{SECRET:[github-secrets][token]}}"
-    pipelines:
-      - langquence-dev-deploy-pipeline
 pipelines:
   langquence-dev-deploy-pipeline:
     group: defaultGroup
@@ -15,6 +9,8 @@ pipelines:
       git:
         git: https://github.com/Langquence/langquence-was.git
         branch: feat/add-sdk-generate-pipeline
+    environment_variables:
+      GITHUB_TOKEN: "{{SECRET:[github-secrets][token]}}"
     stages:
       - deploy:
           clean_workspace: true
