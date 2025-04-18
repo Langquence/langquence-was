@@ -25,7 +25,7 @@ pipelines:
                     command: sh
                     arguments:
                       - "-c"
-                      - "echo ${{SECRET:[github-secrets][token]}}"
+                      - "echo {{SECRET:[github-secrets][token]}}"
                 # - exec:
                 #     command: docker
                 #     arguments:
