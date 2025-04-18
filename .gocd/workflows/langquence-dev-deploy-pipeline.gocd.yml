@@ -2,7 +2,7 @@ format_version: 10
 environments:
   sdk-environment:
     secure_variables:
-      GITHUB_TOKEN: "{{SECRET:[github-secrets][token]}}"
+      GITHUB_TOKEN: {{SECRET:[github-secrets][token]}}
     pipelines:
       - langquence-dev-deploy-pipeline
 pipelines:
