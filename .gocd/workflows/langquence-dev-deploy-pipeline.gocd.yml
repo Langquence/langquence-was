@@ -24,8 +24,8 @@ pipelines:
                 - exec:
                     command: sh
                     arguments:
-                      - c
-                      - "$GITHUB_TOKEN"
+                      - "-c"
+                      - "echo $GITHUB_TOKEN"
                 # - exec:
                 #     command: docker
                 #     arguments:
