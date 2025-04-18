@@ -11,6 +11,7 @@ pipelines:
         branch: feat/add-sdk-generate-pipeline
     environment_variables:
       GITHUB_TOKEN: "{{SECRET:[github-secrets][token]}}"
+      TEST: test
     stages:
       - deploy:
           clean_workspace: true
@@ -22,6 +23,11 @@ pipelines:
                     arguments:
                       - "-c"
                       - 'echo $GITHUB_TOKEN'
+                - exec:
+                    command: sh
+                    arguments:
+                      - "-c"
+                      - 'echo $TEST'
                 # - exec:
                 #     command: docker
                 #     arguments:
