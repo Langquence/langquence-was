@@ -1,8 +1,8 @@
 format_version: 10
 environments:
   sdk-environment:
-    # secure_variables:
-    #   GITHUB_TOKEN: "{{SECRET:[github-secrets][token]}}"
+    environment_variables:
+      GITHUB_TOKEN: "{{SECRET:[github-secrets][token]}}"
     pipelines:
       - langquence-dev-deploy-pipeline
 pipelines:
@@ -25,7 +25,7 @@ pipelines:
                     command: sh
                     arguments:
                       - "-c"
-                      - "echo '{{SECRET:[github-secrets][token]}}'"
+                      - 'echo $GITHUB_TOKEN'
                 # - exec:
                 #     command: docker
                 #     arguments:
